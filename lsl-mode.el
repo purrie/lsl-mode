@@ -19,10 +19,19 @@
 ;;
 ;;; Code:
 
-(defun lsl-mode-do-a-thing ()
-  "This does a thing."
-  (interactive)
-  (message "I did a thing"))
+
+;; setting all .lsl files to be opened with lsl mode automatically
+(setq auto-mode-alist
+      (append
+       '(("\\.lsl$" . lsl-mode))
+       auto-mode-alist))
+
+(define-derived-mode lsl-mode
+  c-mode "LSL"
+  "Major mode for Linden Scripting Language"
+  ;; Using c-mode syntax table
+  :syntax-table nil
+  (message "LSL mode enabled."))
 
 (provide 'lsl-mode)
 ;;; lsl-mode.el ends here
