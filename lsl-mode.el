@@ -20,6 +20,22 @@
 ;;; Code:
 
 
+(defvar lsl-mode-syntax-table
+  (let ((st (make-syntax-table)))
+    (modify-syntax-entry ?+ "." st)
+    (modify-syntax-entry ?- "." st)
+    (modify-syntax-entry ?* ". 23" st)
+    (modify-syntax-entry ?= "." st)
+    (modify-syntax-entry ?% "." st)
+    (modify-syntax-entry ?< "." st)
+    (modify-syntax-entry ?> "." st)
+    (modify-syntax-entry ?& "." st)
+    (modify-syntax-entry ?| "." st)
+    (modify-syntax-entry ?/ ". 124b" st)
+    (modify-syntax-entry ?\n "> b" st)
+    st)
+  "Syntax table for LSL.")
+
 ;; setting all .lsl files to be opened with lsl mode automatically
 (setq auto-mode-alist
       (append
@@ -27,10 +43,10 @@
        auto-mode-alist))
 
 (define-derived-mode lsl-mode
-  c-mode "LSL"
+  prog-mode "LSL"
   "Major mode for Linden Scripting Language"
   ;; Using c-mode syntax table
-  :syntax-table nil
+  :syntax-table lsl-mode-syntax-table
   (message "LSL mode enabled."))
 
 (provide 'lsl-mode)
