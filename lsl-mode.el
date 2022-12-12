@@ -20,6 +20,28 @@
 ;;; Code:
 
 
+(defun lsl-mode-indent-line ()
+  "Indent a single line."
+  (interactive)
+  (let (indent)
+  (save-excursion
+    (back-to-indentation)
+    (setq indent (car (syntax-ppss)))
+
+    (when (or (eq (char-after) ?\))
+              (eq (char-after) ?\}))
+      (setq indent (1- indent)))
+
+    (delete-region (line-beginning-position)
+                   (point))
+    (indent-to (* tab-width indent)))))
+
+(defvar lsl-mode-map
+  (let ((mp (make-sparse-keymap)))
+    (define-key mp (kbd "C-c C-f i") 'lsl-mode-indent-line)
+    mp)
+  "Key map for LSL mode.")
+
 (defvar lsl-mode-syntax-table
   (let ((st (make-syntax-table)))
     (modify-syntax-entry ?+ "." st)
