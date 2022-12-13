@@ -17,6 +17,30 @@
 ;;
 ;;; Code:
 
+(defun lsl-mode-format-buffer ()
+  "Format the entire buffer."
+  (interactive)
+  (lsl-mode-format-region (point-min) (point-max)))
+
+(defun lsl-mode-format-region (&optional start end)
+  "Format selected region.
+The function begins at END and formats each line moving towards START point.
+If arguments are not supplied, the current region beginning and end are used."
+  (interactive)
+  (if (not start)
+      (setq start (region-beginning)))
+  (if (not end)
+      (setq end (region-end)))
+  (save-excursion
+    (goto-char end)
+    (let ((do t))
+      (while do
+        (lsl-mode-format-line)
+        ; ending the loop if we reach the start point or we can't move up any further.
+        (if (or (< (point) start)
+                (= (forward-line -1) -1))
+            (setq do nil))))))
+
 (defun lsl-mode-format-line ()
   "Format a single line."
   (interactive)
@@ -61,6 +85,8 @@
   (let ((mp (make-sparse-keymap)))
     (define-key mp (kbd "C-c C-f i") 'lsl-mode-indent-line)
     (define-key mp (kbd "C-c C-f f") 'lsl-mode-format-line)
+    (define-key mp (kbd "C-c C-f r") 'lsl-mode-format-region)
+    (define-key mp (kbd "C-c C-f b") 'lsl-mode-format-buffer)
     mp)
   "Key map for LSL mode.")
 
