@@ -4,10 +4,8 @@
 ;;
 ;; Author: Purrie <purriestarshine@gmail.com>
 ;; Maintainer: Purrie <purriestarshine@gmail.com>
-;; Created: December 07, 2022
-;; Modified: December 07, 2022
 ;; Version: 0.0.1
-;; Keywords: languages tools
+;; Keywords: languages tools LSL Second Life
 ;; Homepage: https://github.com/purrie/lsl-mode
 ;; Package-Requires: ((emacs "24.3"))
 ;;
