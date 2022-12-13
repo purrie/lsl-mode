@@ -41,17 +41,23 @@
   "Indent a single line."
   (interactive)
   (let (indent)
-  (save-excursion
-    (back-to-indentation)
-    (setq indent (car (syntax-ppss)))
+    (save-excursion
+      (back-to-indentation)
+      (setq indent (car (syntax-ppss)))
 
-    (when (or (eq (char-after) ?\))
-              (eq (char-after) ?\}))
-      (setq indent (1- indent)))
+      (when (eq (char-after) ?\})
+        (setq indent (1- indent)))
 
-    (delete-region (line-beginning-position)
-                   (point))
-    (indent-to (* tab-width indent)))))
+      (delete-region (line-beginning-position)
+                     (point))
+
+      (setq indent (* tab-width indent))
+      (indent-to indent))))
+
+(defun lsl-mode-auto-indent ()
+  "Automatic indentation for LSL mode."
+  (lsl-mode-indent-line)
+  (back-to-indentation))
 
 (defvar lsl-mode-map
   (let ((mp (make-sparse-keymap)))
@@ -85,8 +91,8 @@
 (define-derived-mode lsl-mode
   prog-mode "LSL"
   "Major mode for Linden Scripting Language"
-  ;; Using c-mode syntax table
   :syntax-table lsl-mode-syntax-table
+  (setq indent-line-function 'lsl-mode-auto-indent)
   (message "LSL mode enabled."))
 
 (provide 'lsl-mode)
