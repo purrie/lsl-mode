@@ -19,6 +19,23 @@
 ;;
 ;;; Code:
 
+(defun lsl-mode-format-line ()
+  "Format a single line."
+  (interactive)
+  (lsl-mode-indent-line)
+  (save-excursion
+    (back-to-indentation)
+    (while (re-search-forward "[\{\};]" (line-end-position) t)
+      ; Detete any trailing whitespaces that follow matched symbol.
+      (save-excursion
+        (let ((cur (point)))
+          (if (re-search-forward "[ \t]+" (line-end-position) t)
+              (delete-region cur (point)))))
+      ; If the line still contains characters afterwards, move them to a new line.
+      (if (not (= (point) (line-end-position)))
+          (progn
+            (insert "\n")
+            (lsl-mode-indent-line))))))
 
 (defun lsl-mode-indent-line ()
   "Indent a single line."
@@ -39,6 +56,7 @@
 (defvar lsl-mode-map
   (let ((mp (make-sparse-keymap)))
     (define-key mp (kbd "C-c C-f i") 'lsl-mode-indent-line)
+    (define-key mp (kbd "C-c C-f f") 'lsl-mode-format-line)
     mp)
   "Key map for LSL mode.")
 
