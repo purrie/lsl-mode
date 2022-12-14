@@ -100,11 +100,54 @@ If arguments are not supplied, the current region beginning and end are used."
     (modify-syntax-entry ?< "." st)
     (modify-syntax-entry ?> "." st)
     (modify-syntax-entry ?& "." st)
+    (modify-syntax-entry ?_ "w" st)
     (modify-syntax-entry ?| "." st)
     (modify-syntax-entry ?/ ". 124b" st)
     (modify-syntax-entry ?\n "> b" st)
     st)
   "Syntax table for LSL.")
+
+(defvar lsl-mode-font-lock
+  (let (types variables tags consts preproc macros keywords standard-functions events)
+    ; Using generic matcher to support user defined consts.
+    (setq consts "\\<\\([[:upper:]_[:digit:]]\\)+\\>")
+    ; Generic matcher, tho, one that matches only actual functions would probably be better.
+    (setq standard-functions "\\<\\(ll[[:alnum:]]+\\)\\>[[:blank:]]*(")
+    ; All the standard events in LSL.
+    (setq events (regexp-opt '("attach" "at_rot_target" "at_target" "changed"
+                               "collision" "collision_end" "collision_start" "control"
+                               "dataserver" "email" "experience_permissions" "experience_permissions_denied"
+                               "http_request" "http_response" "land_collision" "land_collision_start"
+                               "land_collision_end" "linkset_data" "link_message" "listen" "money"
+                               "moving_start" "moving_end" "not_at_rot_target" "not_at_target" "no_sensor"
+                               "object_rez" "on_rez" "path_update" "remote_data" "run_time_permissions"
+                               "sensor" "state_entry" "state_exit" "timer" "touch" "touch_start" "touch_end"
+                               "transaction_result") 'words))
+    ; Firestorm preprocessor macros
+    (setq preproc (concat "^#" (regexp-opt '("define" "undef" "ifdef" "ifndef" "if" "elif" "else"
+                                "endif" "warning" "error" "include") t) " "))
+    ; Firestorm macros
+    (setq macros (concat "__" (regexp-opt
+                               '("FILE" "LINE" "SHORTFILE" "AGENTID" "AGENTKEY" "AGENTIDRAW" "AGENTNAME" "ASSETID") t)
+                         "__"))
+    ; LSL types.
+    (setq types (regexp-opt '("integer" "float" "string" "key" "list" "vector" "rotation") 'words))
+    ; This matches variable declarations, not sure if it's actually useful.
+    (setq variables (concat types "[[:blank:]]*\\<\\([[:alnum:]]+\\)\\>[[:blank:]]*="))
+    ; Matching for keywords.
+    (setq keywords (regexp-opt '("do" "for" "while" "if" "else" "state" "default" "return" "jump") 'words))
+    (setq tags "@\\([[:alnum:]]+\\);")
+    ; The actual font-lock table.
+    `((,standard-functions . (1 'font-lock-function-name-face))
+      (,events . 'font-lock-builtin-face)
+      (,preproc . 'font-lock-preprocessor-face)
+      (,macros . 'font-lock-preprocessor-face)
+      (,consts . 'font-lock-constant-face)
+      (,types . 'font-lock-type-face)
+      (,variables . (2 'font-lock-variable-name-face))
+      (,tags . (1 'font-lock-keyword-face))
+      (,keywords . 'font-lock-keyword-face)))
+  "Code highlighting for LSL mode.")
 
 ;; setting all .lsl files to be opened with lsl mode automatically
 (setq auto-mode-alist
@@ -117,6 +160,7 @@ If arguments are not supplied, the current region beginning and end are used."
   "Major mode for Linden Scripting Language"
   :syntax-table lsl-mode-syntax-table
   (setq indent-line-function 'lsl-mode-auto-indent)
+  (setq font-lock-defaults '(lsl-mode-font-lock))
   (message "LSL mode enabled."))
 
 (provide 'lsl-mode)
