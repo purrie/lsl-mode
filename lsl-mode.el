@@ -7,7 +7,7 @@
 ;; Version: 0.0.1
 ;; Keywords: languages tools LSL Second Life
 ;; Homepage: https://github.com/purrie/lsl-mode
-;; Package-Requires: ((emacs "24.3"))
+;; Package-Requires: ((emacs "24.4"))
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
@@ -66,6 +66,18 @@ If arguments are not supplied, the current region beginning and end are used."
     (save-excursion
       (back-to-indentation)
       (setq indent (car (syntax-ppss)))
+
+      (save-excursion
+        (let ((cont (not (eq (char-after) ?\{))))
+          ; go up each line to test line ending
+          (while cont
+            ; stop the loop if we can't go up a line
+            (if (= (forward-line -1) -1)
+                (setq cont nil)
+              ; test if line ends in ) and indent the line if it does, otherwise end the loop
+              (if (= (char-before (line-end-position)) ?\))
+                  (setq indent (1+ indent))
+                (setq cont nil))))))
 
       (when (eq (char-after) ?\})
         (setq indent (1- indent)))
