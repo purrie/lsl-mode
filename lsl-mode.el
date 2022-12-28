@@ -167,6 +167,7 @@ If arguments are not supplied, the current region beginning and end are used."
        '(("\\.lsl$" . lsl-mode))
        auto-mode-alist))
 
+;;;###autoload
 (define-derived-mode lsl-mode
   prog-mode "LSL"
   "Major mode for Linden Scripting Language"
